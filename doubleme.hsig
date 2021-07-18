@@ -1,1 +1,155 @@
-doubleMe x = x + x  
+c:\tools\ghc-9.0.1\bin\ghci.exe
+
+http://learnyouahaskell.com/starting-out
+
+ghci>3*5 : 15
+
+we've been using functions now all along. For instance, * is a function that takes two numbers and multiplies them. As you've seen, we call it by sandwiching it between them. This is what we call an infix function. Most functions that aren't used with numbers are prefix functions. 
+
+ In Haskell, functions are called by writing the function name, a space and then the parameters, separated by spaces.
+ 
+If a function takes two parameters, we can also call it as an infix function by surrounding it with backticks.
+ ghci> div 92 10  -> could be confusing
+9
+ghci> 92 `div` 10  [infix function]
+9
+
+ghci> succ 6
+7 
+ghci> succ (succ 6)   //like doing succ(succ(6)) in c#
+8
+
+doubleSmallNumber x = if x > 100  then x   else x*2   
+
+functions can't begin with uppercase letters
+
+let lostNumbers = [4,8,15,16,23,42]
+
+strings are just lists of characters. "hello" is just syntactic sugar for ['h','e','l','l','o']
+
+ghci> doubleMe x = x + x
+ghci> doubleMe 3
+6
+ghci> doubleMe 7
+14
+ghci> doubleUs x y = x*2 + y*2
+ghci> doubleUs 5 8
+26
+ghci> doubleUs x y = doubleMe x + doubleMe y
+ghci> doubleUs 5 8
+26
+ghci> doubleSmallNumber x = if x > 100
+
+<interactive>:27:35: error:
+    parse error (possibly incorrect indentation or mismatched brackets)
+ghci>                         then x
+
+<interactive>:28:25: error: parse error on input `then'
+ghci>                         else x*2
+ghci> doubleSmallNumber x = if x > 100  then x   else x*2
+ghci> doubleSmallNumber 10
+20
+ghci> doubleSmallNumber 4
+8
+ghci> let lostNumbers = [4,8,15,16,23,42]
+ghci> lostNumbers
+[4,8,15,16,23,42]
+ghci> [1,2,3,4] ++ [9,10,11,12]
+[1,2,3,4,9,10,11,12]
+ghci> 'A':" SMALL CAT"
+"A SMALL CAT"
+ghci>
+
+[1,2,3] is actually just syntactic sugar for 1:2:3:[]
+
+to get an element out of a list by index, use !!. The indices start at 0.
+[9.4,33.2,96.2,11.2,23.25] !! 1  
+
+ghci> head [3,7,9,11]
+3
+ghci> tail [3,7,9,11]
+[7,9,11]
+ghci> last [3,7,9,11]
+11
+ghci> init [3,7,9,11]
+[3,7,9]
+ghci>
+ghci> product [6,2,1,2]
+24
+ghci> 4 `elem` [3,4,5,6]
+True
+['b'..'q']
+ghci> [x*3 | x <- [1..10]]
+[3,6,9,12,15,18,21,24,27,30]
+ghci> [x*2 | x <- [1..10], x*2 >= 12]
+[12,14,16,18,20]
+ghci> let nouns = ["hobo","frog","pope"]
+ghci> let adjectives = ["lazy","grouchy","scheming"]
+ghci> [adjective ++ " " ++ noun | adjective <- adjectives, noun <- nouns]
+["lazy hobo","lazy frog","lazy pope","grouchy hobo","grouchy frog","grouchy pope","scheming hobo","scheming frog","scheming pope"]
+
+ghci> let rightTriangles = [ (a,b,c) | c <- [1..10], b <- [1..c], a <- [1..b], a^2 + b^2 == c^2]
+ghci> rightTriangles
+[(3,4,5),(6,8,10)]
+ghci>
+ghci> let rightTriangles' = [ (a,b,c) | c <- [1..10], b <- [1..c], a <- [1..b], a^2 + b^2 == c^2, a+b+c == 24]
+ghci> rightTriangles'
+[(6,8,10)]
+
+//==============Types and TypeClasses=================
+ the :t command which, followed by any valid expression, tells us its type.
+ ghci> :t "hello"
+"hello" :: String
+ghci> :t (True, 'a')
+(True, 'a') :: (Bool, Char)
+ghci> factorial n = product [1..n]
+ghci> factorial 20
+2432902008176640000
+
+A typeclass is a sort of interface that defines some behavior. If a type is a part of a typeclass, that means that it supports and implements the behavior the typeclass describes. A lot of people coming from OOP get confused by typeclasses because they think they are like classes in object oriented languages. Well, they're not. You can think of them kind of as Java interfaces, only better.
+
+ghci> :t (==)
+(==) :: Eq a => a -> a -> Bool
+Everything before the => symbol is called a class constraint. We can read the previous type declaration like this: the equality function takes any two values that are of the same type and returns a Bool. The type of those two values must be a member of the Eq class (this was the class constraint).
+
+Guards
+bmiTell weight height   | weight / height ^ 2 <= 18.5 = "You're underweight, you emo, you!"  | weight / height ^ 2 <= 25.0 = "You're supposedly normal. Pffft, I bet you're ugly!" | weight / height ^ 2 <= 30.0 = "You're fat! Lose some weight, fatty!" | otherwise                 = "You're a whale, congratulations!" 
+
+ghci> bmiTell weight height   | weight / height ^ 2 <= 18.5 = "You're underweight, you emo, you!"  | weight / height ^
+ghci> bmiTell 68 1.76
+"You're supposedly normal. Pffft, I bet you're ugly!"
+
+bmiTell weight height    | bmi <= 18.5 = "You're underweight, you emo, you!"    | bmi <= 25.0 = "You're supposedly normal. Pffft, I bet you're ugly!"   | bmi <= 30.0 = "You're fat! Lose some weight, fatty!"    | otherwise   = "You're a whale, congratulations!"   where bmi = weight / height ^ 2  
+	
+The form is let <bindings> in <expression>.  The names that you define in the let part are accessible to the expression after the in part.
+
+ghci> cylinder r h =  let sideArea = 2 * pi * r * h ; topArea = pi * r^2 in sideArea + 2 * topArea
+ghci> cylinder 4 5
+
+describeList xs = "The list is " ++ case xs of [] -> "empty."   [x] -> "a singleton list."    xs -> "a longer list.
+
+multThree x y z = x * y * z  
+What really happens when we do multThree 3 5 9 or ((multThree 3) 5) 9? First, 3 is applied to multThree, because they're separated by a space. That creates a function that takes one parameter and returns a function. So then 5 is applied to that, which creates a function that will take a parameter and multiply it by 15. 9 is applied to that function and the result is 135 or something.
+
+Let's find the largest number under 100,000 that's divisible by 3829. T
+largestDivisible = head (filter p [100000,99999..])    where p x = x `mod` 3829 == 0  
+
+Lambdas
+Lambdas are basically anonymous functions that are used because we need some functions only once. Normally, we make a lambda with the sole purpose of passing it to a higher-order function. To make a lambda, we write a \ (because it kind of looks like the greek letter lambda if you squint hard enough) and then we write the parameters, separated by spaces. After that comes a -> and then the function body. We usually surround them by parentheses, because otherwise they extend all the way to the right.
+numLongChains = length (filter (\xs -> length xs > 15) (map chain [1..100])) 
+Lambdas are expressions, that's why we can just pass them like that. The expression (\xs -> length xs > 15) returns a function that tells us whether the length of the list passed to it is greater than 15.
+
+ghci> sqrt (3 + 4 + 9)
+4.0
+ghci> sqrt $ 3 + 4 + 9
+4.0
+because $ has the lowest precedence of any operator. That's why you can imagine a $ being sort of the equivalent of writing an opening parentheses and then writing a closing one on the far right side of the expression.
+
+intersperse '.' "MONKEY"  
+
+concat ["foo","bar","car"]  
+
+ghci> takeWhile (>3) [6,5,4,3,2,1,2,3,4,5,4,3,2,1]
+[6,5,4]
+ghci> takeWhile (/=' ') "This is a sentence"
+"This"
